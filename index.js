@@ -45,12 +45,17 @@ io.on('connection', socket => {
   console.log(socket.id)
   console.log('CLIENT CONNECTED!')
   socket.send('Hello and welcome to Code Co Lab!')
+
+
+  socket.on('question', payload => {
+    console.log(payload)
+    console.log('RECEIVED EMIT')
+  })
+
+
 })
 
-io.on('question', payload => {
-  console.log(payload)
-  console.log('RECEIVED EMIT')
-})
+
 
 mongoose.connect(MONGODB_URI, options)
   .then(
