@@ -25,7 +25,7 @@ const server = http.createServer(app)
 
 const corsOption = {
   cors: true,
-  origin: "https://example.com",
+  origin: "*",
   methods: ["GET", "PUT"]
 }
 const io = socketio(server, corsOption)
