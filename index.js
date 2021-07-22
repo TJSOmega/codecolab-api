@@ -37,6 +37,7 @@ app.use(errorHandler);
 
 io.on('connection', socket => {
   console.log(socket.id)
+  console.log('CLIENT CONNECTED!')
   socket.send('Hello and welcome to Code Co Lab!')
 })
 
