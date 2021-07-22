@@ -49,6 +49,7 @@ io.on('connection', socket => {
 
 io.on('question', payload => {
   console.log(payload)
+  console.log('RECEIVED EMIT')
 })
 
 mongoose.connect(MONGODB_URI, options)
