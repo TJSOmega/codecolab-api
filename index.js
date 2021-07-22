@@ -47,6 +47,10 @@ io.on('connection', socket => {
   socket.send('Hello and welcome to Code Co Lab!')
 })
 
+io.on('question', payload => {
+  console.log(payload)
+})
+
 mongoose.connect(MONGODB_URI, options)
   .then(
     server.listen(port, () => console.log(`Now listening on port ${port}.`))
