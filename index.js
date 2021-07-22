@@ -22,7 +22,13 @@ const logger = require('./src/middleware/logger.js');
 
 const app = express()
 const server = http.createServer(app)
-const io = socketio(server)
+
+const corsOption = {
+  cors: true,
+  origin: "https://example.com",
+  methods: ["GET", "PUT"]
+}
+const io = socketio(server, corsOption)
 
 app.use(express.json());
 
