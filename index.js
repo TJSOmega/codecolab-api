@@ -35,13 +35,15 @@ app.use(v1Routes);
 app.use(notFound);
 app.use(errorHandler);
 
+let data = {
+  name: "tjs",
+  description: ['goodlooking', true, 10]
+}
 io.on('connection', socket => {
-  console.log(socket.id)
   console.log('CLIENT CONNECTED!')
-  socket.send('Hello and welcome to Code Co Lab!')
+  socket.emit('welcome', data)
 })
 
 mongoose.connect(MONGODB_URI, options)
-  .then(
-    server.listen(port, () => console.log(`Now listening on port ${port}.`))
-  )
+
+  server.listen(port, () => console.log(`Now listening on port ${port}.`))
