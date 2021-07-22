@@ -28,7 +28,9 @@ router.param('model', (req, res, next) => {
 });
 
 
-
+router.use('/', (req, res) => {
+res.send('Hello World')
+})
 router.get('/:model', handleGetAll);
 router.get('/:model/:id', handleGetOne);
 router.post('/:model', handleCreate);
