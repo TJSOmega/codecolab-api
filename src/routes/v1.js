@@ -28,15 +28,15 @@ router.param('model', (req, res, next) => {
 });
 
 
-router.use('/', (req, res) => {
-res.send('Hello World')
-})
+
 router.get('/:model', handleGetAll);
 router.get('/:model/:id', handleGetOne);
 router.post('/:model', handleCreate);
 router.put('/:model/:id', handleUpdate);
 router.delete('/:model/:id', handleDelete);
-
+router.use('/', (req, res) => {
+res.send('Hello World')
+})
 async function handleGetAll(req, res) {
   let allRecords = await req.model.get();
   res.status(200).json(allRecords);
