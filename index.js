@@ -57,7 +57,7 @@ io.on('connection', socket => {
       user_id: socket.id
     }
     
-    socket.broadcast.emit('room-data', roomData)
+    socket.emit('room-data', roomData)
   })
 
 
