@@ -54,7 +54,8 @@ io.on('connection', socket => {
       question: payload,
       user_id: socket.id
     }
-    socket.broadcast.emit('room-data', roomData)
+    
+    console.log(socket.broadcast.emit('room-data', roomData))
   })
 
 
