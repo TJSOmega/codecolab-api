@@ -50,6 +50,11 @@ io.on('connection', socket => {
   socket.on('question', payload => {
     console.log(payload)
     console.log('RECEIVED EMIT')
+    let roomData = {
+      question: payload,
+      user_id: socket.id
+    }
+    socket.broadcast.emit('room-data', roomData)
   })
 
 
