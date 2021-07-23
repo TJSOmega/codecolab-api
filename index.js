@@ -55,7 +55,7 @@ io.on('connection', socket => {
       user_id: socket.id
     }
     
-    console.log(socket.broadcast.emit('room-data', roomData))
+    console.log('SOCKET IS EMITTING', socket.broadcast.emit('room-data', roomData))
   })
 
 
