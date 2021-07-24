@@ -54,7 +54,8 @@ io.on('connection', socket => {
   socket.on('user-signup', payload => {
     user = {
       user_name: payload,
-      user_id: socket.id
+      user_id: socket.id,
+      roomHistory: []
     }
 
     console.log('USERNAME SET')
@@ -84,13 +85,6 @@ io.on('connection', socket => {
       }
     })
 
-    // rooms = rooms.filter(room => {
-    //   if (!socket.rooms.has(room.room_id)) {
-    //     return room
-    //   }
-    //   socket.leave(room.room_id)
-    // })
-
 
     for (const el of socket.rooms) {
       if (socket.rooms.has(el) && el !== socket.id) {
@@ -99,6 +93,7 @@ io.on('connection', socket => {
         rooms.forEach(room => {
           if (el === room.room_id) {
             room.activeUsers = room.activeUsers - 1
+            roomHistory.push(room.room_id)
           }
         })
       }
@@ -139,6 +134,7 @@ io.on('connection', socket => {
         rooms.forEach(room => {
           if (el === room.room_id) {
             room.activeUsers = room.activeUsers - 1
+            roomHistory.push(room.room_id)
           }
         })
 
@@ -170,29 +166,38 @@ io.on('connection', socket => {
 
     console.log('SOCKET ROOMS IN DISCONNECT', socket.rooms)
 
-    users = users.filter(u => u.user_id !== socket.id)
-
-    for (const el of socket.rooms) {
-      if (socket.rooms.has(el) && el !== socket.id) {
-        socket.leave(el)
-
-        rooms.forEach(room => {
-          if (el === room.room_id) {
+    users.forEach(u => {
+      if (u.user_id === socket.id) {
+        u.roomHistory.forEach(history => {
+          if (history === rooms.room_id) {
             room.activeUsers = room.activeUsers - 1
           }
         })
       }
-      rooms = rooms.filter(room => {
-        if (room.activeUsers > 0) {
-          return room
-        }
-      })
-    }
-
-
+    })
     console.log(users)
-    console.log(rooms)
+    users = users.filter(u => u.user_id !== socket.id)
+    // for (const el of socket.rooms) {
+    //   if (socket.rooms.has(el) && el !== socket.id) {
+    //     socket.leave(el)
+
+    //     rooms.forEach(room => {
+    //       if (el === room.room_id) {
+    //         room.activeUsers = room.activeUsers - 1
+    //       }
+    //     })
+    //   }
+    //   rooms = rooms.filter(room => {
+    //     if (room.activeUsers > 0) {
+    //       return room
+    //     }
   })
+  // }
+
+
+  console.log(users)
+  console.log(rooms)
+  // })
 })
 
 
