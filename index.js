@@ -46,7 +46,7 @@ app.use(errorHandler);
 
 io.on('connection', socket => {
   console.log('CLIENT CONNECTED', socket.id)
-  
+
   io.emit('room-data', rooms)
 
   socket.on('user-signup', payload => {
@@ -97,7 +97,12 @@ io.on('connection', socket => {
   });
 
 
-
+  socket.on('join-room', payload => {
+    socket.join(payload)
+    
+    console.log('SOCKET ROOMS', socket.rooms)
+    console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
+  })
 
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
@@ -112,10 +117,7 @@ io.on('connection', socket => {
 
     console.log(users)
     console.log(rooms)
-
-    io.emit('room-data', rooms)
   })
-
 })
 
 
