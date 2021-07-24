@@ -66,14 +66,25 @@ io.on('connection', socket => {
     console.log(payload)
     console.log('RECEIVED EMIT')
     let roomName = ''
+    let roomObj = {}
 
     users.forEach(u => {
       if (u.user_id === socket.id) {
         roomName = `${payload.question._id}${u.user_id}`
+
+        roomObj = {
+          name: payload.question.name,
+          room_id: roomName
+        }
       }
     })
+
+    rooms.forEach(room => {
+      socket.leave(room.room_id)
+    })
+    
     socket.join(roomName)
-    rooms.push(roomName)
+    rooms.push(roomObj)
 
     console.log('SOCKET ROOMS', socket.rooms)
     console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
