@@ -79,7 +79,7 @@ io.on('connection', socket => {
         roomObj = {
           name: payload.question.name,
           room_id: roomName,
-          activeUsers: 1
+          activeUsers: 0
         }
       }
     })
@@ -90,7 +90,7 @@ io.on('connection', socket => {
     //   }
     //   socket.leave(room.room_id)
     // })
-    rooms.push(roomObj)
+
 
     for (const el of socket.rooms) {
       if (socket.rooms.has(el) && el !== socket.id) {
@@ -104,7 +104,9 @@ io.on('connection', socket => {
       }
 
     }
+
     socket.join(roomName)
+    rooms.push(roomObj)
     rooms.forEach(room => {
       if (roomName === room.name) {
         room.activeUsers += 1
