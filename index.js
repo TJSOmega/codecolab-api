@@ -145,7 +145,7 @@ io.on('connection', socket => {
 
     user.forEach(user => {
       if (user.user_id === socket.id) {
-        if(socket.rooms.has(user.current_room)) {
+        if(socket.rooms.has(user.current_room)){
 
         } else {
           for (const el of socket.rooms) {
@@ -160,6 +160,11 @@ io.on('connection', socket => {
             })
           }
         }
+        
+
+        }
+      }
+    })
 
     socket.join(payload)
     rooms.forEach(room => {
