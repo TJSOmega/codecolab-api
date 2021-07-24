@@ -105,8 +105,8 @@ io.on('connection', socket => {
       if (!socket.rooms.has(room.room_id)) {
         return room
       }
-
-
+    })
+    
     console.log(users)
     console.log(rooms)
 
