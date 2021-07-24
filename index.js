@@ -98,8 +98,15 @@ io.on('connection', socket => {
 
 
   socket.on('join-room', payload => {
-    socket.join(payload)
+
+    rooms = rooms.filter(room => {
+      if (!socket.rooms.has(room.room_id)) {
+        return room
+      }
+    })
     
+    socket.join(payload)
+
     console.log('SOCKET ROOMS', socket.rooms)
     console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
   })
