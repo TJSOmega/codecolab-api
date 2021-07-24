@@ -104,9 +104,9 @@ io.on('connection', socket => {
       }
 
     }
-
-    socket.join(roomName)
     rooms.push(roomObj)
+    socket.join(roomName)
+    
     rooms.forEach(room => {
       if (roomName === room.name) {
         room.activeUsers += 1
