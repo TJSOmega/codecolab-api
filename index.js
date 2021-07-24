@@ -46,7 +46,8 @@ app.use(errorHandler);
 
 io.on('connection', socket => {
   console.log('CLIENT CONNECTED', socket.id)
-
+  
+  io.emit('room-data', rooms)
 
   socket.on('user-signup', payload => {
     let user = {
@@ -111,7 +112,7 @@ io.on('connection', socket => {
 
     console.log(users)
     console.log(rooms)
-    
+
     io.emit('room-data', rooms)
   })
 
