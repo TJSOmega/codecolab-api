@@ -44,7 +44,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 io.on('connection', socket => {
-  console.log(socket.id)
+  console.log('CLIENT CONNECTED', socket.id)
 
 
   socket.on('user-signup',payload =>{
@@ -52,10 +52,11 @@ io.on('connection', socket => {
       user_name: payload,
       user_id: socket.id
     }
-    console.log('CLIENT CONNECTED!')
+    console.log('USERNAME SET')
     console.log(user)
 
     users.push(user)
+    console.log(users)
   })
   
 
