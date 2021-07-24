@@ -75,7 +75,9 @@ io.on('connection', socket => {
     socket.join(roomName)
     rooms.push(roomName)
 
-    console.log(socket.rooms)
+    console.log('SOCKET ROOMS', socket.rooms)
+    console.log('IO ROOMS', io.rooms)
+    console.log('IO MANAGER ROOMS', io.sockets.manager.rooms)
   });
 
 
