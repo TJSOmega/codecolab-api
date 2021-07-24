@@ -95,15 +95,17 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
+
     users = users.filter(u => u.user_id !== socket.id)
-    for(const el of io.sockets.adapter.rooms) {
-      console.log(el)
-      rooms = rooms.filter(r => r.room_id !== el)
-    }
-    
+
+    io.sockets.adapter.rooms.forEach((value, key) => {
+      rooms = rooms.filter(r => r.room_id !== key)
+    })
     console.log(users)
     console.log(rooms)
+
   })
+
 
 
 })
