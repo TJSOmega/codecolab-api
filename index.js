@@ -168,6 +168,8 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
 
+    console.log('SOCKET ROOMS IN DISCONNECT', socket.rooms)
+
     users = users.filter(u => u.user_id !== socket.id)
 
     for (const el of socket.rooms) {
@@ -175,7 +177,6 @@ io.on('connection', socket => {
         socket.leave(el)
 
         rooms.forEach(room => {
-          console.log(el)
           if (el === room.room_id) {
             room.activeUsers = room.activeUsers - 1
           }
