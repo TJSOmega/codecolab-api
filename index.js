@@ -46,14 +46,16 @@ app.use(errorHandler);
 io.on('connection', socket => {
   console.log(socket.id)
 
-  
-  io.on('connect',payload =>{
+
+  io.on('user-signup',payload =>{
     let user = {
       user_name: payload,
       user_id: socket.id
     }
     console.log('CLIENT CONNECTED!')
     console.log(user)
+
+    users.push(user)
   })
   
 
