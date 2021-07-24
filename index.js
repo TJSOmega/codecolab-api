@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const http = require('http');
 const socketio = require('socket.io')
 
+let users = [];
+
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/codecolab';
 const options = { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true };
@@ -43,8 +45,17 @@ app.use(errorHandler);
 
 io.on('connection', socket => {
   console.log(socket.id)
-  console.log('CLIENT CONNECTED!')
-  socket.send('Hello and welcome to Code Co Lab!')
+
+  
+  io.on('connect',payload =>{
+    let user = {
+      user_name: payload,
+      user_id: socket.id
+    }
+    console.log('CLIENT CONNECTED!')
+    console.log(user)
+  })
+  
 
 
   socket.on('question', payload => {
@@ -56,14 +67,17 @@ io.on('connection', socket => {
       question: payload,
       user_id: socket.id
     }
-    
+
     socket.emit('room-data', roomData)
-  })
+  });
+
+  
 
 
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
   })
+
 
 })
 
