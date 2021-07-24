@@ -45,15 +45,18 @@ app.use(notFound);
 app.use(errorHandler);
 
 io.on('connection', socket => {
+  let user = {}
+  let roomObj = {}
   console.log('CLIENT CONNECTED', socket.id)
 
   io.emit('room-data', rooms)
 
   socket.on('user-signup', payload => {
-    let user = {
+    user = {
       user_name: payload,
       user_id: socket.id
     }
+
     console.log('USERNAME SET')
     console.log(user)
 
@@ -67,7 +70,7 @@ io.on('connection', socket => {
     console.log(payload)
     console.log('RECEIVED EMIT')
     let roomName = ''
-    let roomObj = {}
+
 
     users.forEach(u => {
       if (u.user_id === socket.id) {
@@ -75,20 +78,47 @@ io.on('connection', socket => {
 
         roomObj = {
           name: payload.question.name,
-          room_id: roomName
+          room_id: roomName,
+          activeUsers: 1
         }
       }
     })
 
+    // rooms = rooms.filter(room => {
+    //   if (!socket.rooms.has(room.room_id)) {
+    //     return room
+    //   }
+    //   socket.leave(room.room_id)
+    // })
+    rooms.push(roomObj)
+
+    for (const el of socket.rooms) {
+      if (socket.rooms.has(el) && el !== socket.id) {
+        socket.leave(el)
+
+        rooms.forEach(room => {
+          if (el === room.roomName) {
+            room.activeUsers = room.activeUsers - 1
+          }
+        })
+      }
+
+    }
+    socket.join(roomName)
+    rooms.forEach(room => {
+      if (roomName === room.name) {
+        room.activeUsers += 1
+      }
+    })
     rooms = rooms.filter(room => {
-      if (!socket.rooms.has(room.room_id)) {
+      if (room.activeUsers > 0) {
         return room
       }
-      socket.leave(room.room_id)
     })
 
-    socket.join(roomName)
-    rooms.push(roomObj)
+
+
+
 
     console.log('SOCKET ROOMS', socket.rooms)
     console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
@@ -102,13 +132,34 @@ io.on('connection', socket => {
     for (const el of socket.rooms) {
       if (socket.rooms.has(el) && el !== socket.id) {
         socket.leave(el)
+
+        rooms.forEach(room => {
+          if (el === room.roomName) {
+            room.activeUsers = room.activeUsers - 1
+          }
+        })
+
       }
     }
 
     socket.join(payload)
+    rooms.forEach(room => {
+      if (payload === room.name) {
+        room.activeUsers += 1
+      }
+    })
+
+    rooms = rooms.filter(room => {
+      if (room.activeUsers > 0) {
+        return room
+      }
+    })
+
+
 
     console.log('SOCKET ROOMS', socket.rooms)
     console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
+    console.log(rooms)
   })
 
   socket.on('disconnect', () => {
@@ -116,11 +167,23 @@ io.on('connection', socket => {
 
     users = users.filter(u => u.user_id !== socket.id)
 
-    rooms = rooms.filter(room => {
-      if (!socket.rooms.has(room.room_id)) {
-        return room
+    for (const el of socket.rooms) {
+      if (socket.rooms.has(el) && el !== socket.id) {
+        socket.leave(el)
+
+        rooms.forEach(room => {
+          if (el === room.roomName) {
+            room.activeUsers = room.activeUsers - 1
+          }
+        })
       }
-    })
+      rooms = rooms.filter(room => {
+        if (room.activeUsers > 0) {
+          return room
+        }
+      })
+    }
+
 
     console.log(users)
     console.log(rooms)
