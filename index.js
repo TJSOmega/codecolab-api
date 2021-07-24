@@ -100,7 +100,7 @@ io.on('connection', socket => {
   socket.on('join-room', payload => {
 
     for (const el of socket.rooms) {
-      if (socket.rooms.has(el)) {
+      if (socket.rooms.has(el) && el !== socket.id) {
         socket.leave(el)
       }
     }
