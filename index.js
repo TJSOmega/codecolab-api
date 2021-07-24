@@ -97,6 +97,7 @@ io.on('connection', socket => {
     console.log('CLIENT DISCONNECTED')
     users = users.filter(u => u.user_id !== socket.id)
     for(const el of io.sockets.adapter.rooms) {
+      console.log(el)
       rooms = rooms.filter(r => r.room_id !== el)
     }
     
