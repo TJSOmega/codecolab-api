@@ -6,6 +6,7 @@ const http = require('http');
 const socketio = require('socket.io')
 
 let users = [];
+let rooms = [];
 
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/codecolab';
@@ -47,7 +48,7 @@ io.on('connection', socket => {
   console.log('CLIENT CONNECTED', socket.id)
 
 
-  socket.on('user-signup',payload =>{
+  socket.on('user-signup', payload => {
     let user = {
       user_name: payload,
       user_id: socket.id
@@ -58,29 +59,30 @@ io.on('connection', socket => {
     users.push(user)
     console.log(users)
   })
-  
+
 
 
   socket.on('question', payload => {
     console.log(payload)
     console.log('RECEIVED EMIT')
+    let roomName = ''
 
-
-    let roomData = {
-      question: payload,
-      user_id: socket.id
-    }
-
-    socket.emit('room-data', roomData)
+    users.forEach(u => {
+      if (u.user_id === socket.id) {
+        roomName = `${payload._id}${u.user_id}`
+      }
+    })
+    socket.join('room-data',roomName)
   });
 
-  
+
 
 
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
     users = users.filter(u => u.user_id !== socket.id)
     console.log(users)
+    console.log(rooms)
   })
 
 
