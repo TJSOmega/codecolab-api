@@ -55,7 +55,7 @@ io.on('connection', socket => {
     user = {
       user_name: payload,
       user_id: socket.id,
-      roomHistory: []
+      current_room: ''
     }
 
     console.log('USERNAME SET')
@@ -85,25 +85,41 @@ io.on('connection', socket => {
       }
     })
 
+    user.forEach(user => {
+      if (user.user_id === socket.id) {
+        if(socket.rooms.has(user.current_room)){
 
-    for (const el of socket.rooms) {
-      if (socket.rooms.has(el) && el !== socket.id) {
-        socket.leave(el)
+        } else {
+          for (const el of socket.rooms) {
+          if (socket.rooms.has(el) && el !== socket.id) {
+            socket.leave(el)
 
-        rooms.forEach(room => {
-          if (el === room.room_id) {
-            room.activeUsers = room.activeUsers - 1
-            roomHistory.push(room.room_id)
+            rooms.forEach(room => {
+              if (el === room.room_id) {
+                room.activeUsers = room.activeUsers - 1
+
+              }
+            })
           }
-        })
-      }
+        }
+        
 
-    }
+        }
+      }
+    })
+
     rooms.push(roomObj)
     console.log(rooms)
     socket.join(roomName)
 
+
+
     rooms.forEach(room => {
+      users.forEach(user => {
+        if (user.user_id === socket.id) {
+          user.current_room = room.room_id
+        }
+      })
       if (roomName === room.room_id) {
         room.activeUsers += 1
       }
@@ -127,19 +143,23 @@ io.on('connection', socket => {
 
   socket.on('join-room', payload => {
 
-    for (const el of socket.rooms) {
-      if (socket.rooms.has(el) && el !== socket.id) {
-        socket.leave(el)
+    user.forEach(user => {
+      if (user.user_id === socket.id) {
+        if(socket.rooms.has(user.current_room)) {
 
-        rooms.forEach(room => {
-          if (el === room.room_id) {
-            room.activeUsers = room.activeUsers - 1
-            roomHistory.push(room.room_id)
+        } else {
+          for (const el of socket.rooms) {
+          if (socket.rooms.has(el) && el !== socket.id) {
+            socket.leave(el)
+
+            rooms.forEach(room => {
+              if (el === room.room_id) {
+                room.activeUsers = room.activeUsers - 1
+
+              }
+            })
           }
-        })
-
-      }
-    }
+        }
 
     socket.join(payload)
     rooms.forEach(room => {
@@ -166,15 +186,15 @@ io.on('connection', socket => {
 
     console.log('SOCKET ROOMS IN DISCONNECT', socket.rooms)
 
-    users.forEach(u => {
-      if (u.user_id === socket.id) {
-        u.roomHistory.forEach(history => {
-          if (history === rooms.room_id) {
-            room.activeUsers = room.activeUsers - 1
-          }
-        })
-      }
-    })
+    // users.forEach(u => {
+    //   if (u.user_id === socket.id) {
+    //     u.roomHistory.forEach(history => {
+    //       if (history === rooms.room_id) {
+    //         room.activeUsers = room.activeUsers - 1
+    //       }
+    //     })
+    //   }
+    // })
     console.log(users)
     users = users.filter(u => u.user_id !== socket.id)
     // for (const el of socket.rooms) {
