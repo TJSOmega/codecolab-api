@@ -72,7 +72,8 @@ io.on('connection', socket => {
         roomName = `${payload._id}${u.user_id}`
       }
     })
-    socket.join('room-data',roomName)
+    console.log(socket.join('room-data',roomName))
+    rooms.push(roomName)
   });
 
 
