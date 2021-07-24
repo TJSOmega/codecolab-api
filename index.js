@@ -103,8 +103,9 @@ io.on('connection', socket => {
       if (!socket.rooms.has(room.room_id)) {
         return room
       }
+      socket.leave(room.room_id)
     })
-    
+
     socket.join(payload)
 
     console.log('SOCKET ROOMS', socket.rooms)
