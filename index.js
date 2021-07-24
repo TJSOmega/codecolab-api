@@ -72,8 +72,10 @@ io.on('connection', socket => {
         roomName = `${payload.question._id}${u.user_id}`
       }
     })
-    console.log(socket.join(roomName))
+    socket.join(roomName)
     rooms.push(roomName)
+
+    console.log(socket.rooms)
   });
 
 
