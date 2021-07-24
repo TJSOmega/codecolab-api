@@ -82,7 +82,7 @@ io.on('connection', socket => {
     rooms.forEach(room => {
       socket.leave(room.room_id)
     })
-    
+
     socket.join(roomName)
     rooms.push(roomObj)
 
@@ -96,6 +96,10 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
     users = users.filter(u => u.user_id !== socket.id)
+    for(const el of io.sockets.adapter.rooms) {
+      rooms = rooms.filter(r => r.room_id !== el)
+    }
+    
     console.log(users)
     console.log(rooms)
   })
