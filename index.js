@@ -55,7 +55,6 @@ io.on('connection', socket => {
     user = {
       user_name: payload,
       user_id: socket.id,
-      current_room: ''
     }
 
     console.log('USERNAME SET')
@@ -102,7 +101,7 @@ io.on('connection', socket => {
     rooms.push(roomObj)
     console.log(rooms)
     socket.join(roomName)
-    
+
 
     rooms.forEach(room => {
       if (roomName === room.room_id) {
@@ -161,48 +160,51 @@ io.on('connection', socket => {
     console.log(rooms)
   })
 
+  socket.on('get-user', payload => {
+    users.forEach(user => {
+      if (payload === user.user_name) {
+        io.emit('user-return', user)
+      }
+    })
+  }) 
+
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
 
     console.log('SOCKET ROOMS IN DISCONNECT', socket.rooms)
 
-    // users.forEach(u => {
-    //   if (u.user_id === socket.id) {
-    //     u.roomHistory.forEach(history => {
-    //       if (history === rooms.room_id) {
-    //         room.activeUsers = room.activeUsers - 1
-    //       }
-    //     })
-    //   }
-    // })
     console.log(users)
     users = users.filter(u => u.user_id !== socket.id)
-    // for (const el of socket.rooms) {
-    //   if (socket.rooms.has(el) && el !== socket.id) {
-    //     socket.leave(el)
+    for (const el of socket.rooms) {
+      if (socket.rooms.has(el) && el !== socket.id) {
+        socket.leave(el)
 
-    //     rooms.forEach(room => {
-    //       if (el === room.room_id) {
-    //         room.activeUsers = room.activeUsers - 1
-    //       }
-    //     })
-    //   }
-    //   rooms = rooms.filter(room => {
-    //     if (room.activeUsers > 0) {
-    //       return room
-    //     }
+        rooms.forEach(room => {
+          if (room.room_id.includes()) {
+            room.activeUsers = room.activeUsers - 1
+
+          }
+        })
+      }
+
+    }
+      rooms = rooms.filter(room => {
+        if (room.activeUsers > 0) {
+          return room
+        }
+      })
+      console.log(users)
+      console.log(rooms)
+    })
+
+
+ 
+    // })
   })
-  // }
-
-
-  console.log(users)
-  console.log(rooms)
-  // })
-})
 
 
 
-mongoose.connect(MONGODB_URI, options)
-  .then(
-    server.listen(port, () => console.log(`Now listening on port ${port}.`))
-  )
+  mongoose.connect(MONGODB_URI, options)
+    .then(
+      server.listen(port, () => console.log(`Now listening on port ${port}.`))
+    )
