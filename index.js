@@ -62,6 +62,8 @@ io.on('connection', socket => {
 
     users.push(user)
     console.log(users)
+
+    io.emit('user-return', user)
   })
 
 
@@ -160,13 +162,7 @@ io.on('connection', socket => {
     console.log(rooms)
   })
 
-  socket.on('get-user', payload => {
-    users.forEach(user => {
-      if (payload === user.user_name) {
-        io.emit('user-return', user)
-      }
-    })
-  }) 
+  
 
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
