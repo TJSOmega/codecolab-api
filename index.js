@@ -74,8 +74,7 @@ io.on('connection', socket => {
 
         roomObj = {
           name: payload.question.name,
-          room_id: roomName,
-          currentUsers:
+          room_id: roomName
         }
       }
     })
@@ -107,13 +106,13 @@ io.on('connection', socket => {
         return room
       }
     })
-    
+
     console.log(users)
     console.log(rooms)
 
   })
 
-  
+
   io.on('disconnect', () => {
     console.log('SOMEONE DISCONNECTED!')
   })
