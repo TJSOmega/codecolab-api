@@ -137,7 +137,7 @@ io.on('connection', socket => {
         socket.leave(el)
 
         rooms.forEach(room => {
-          if (el === room.roomName) {
+          if (el === room.room_id) {
             room.activeUsers = room.activeUsers - 1
           }
         })
@@ -147,7 +147,7 @@ io.on('connection', socket => {
 
     socket.join(payload)
     rooms.forEach(room => {
-      if (payload === room.name) {
+      if (payload === room.room_id) {
         room.activeUsers += 1
       }
     })
