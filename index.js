@@ -99,12 +99,11 @@ io.on('connection', socket => {
 
   socket.on('join-room', payload => {
 
-    rooms = rooms.filter(room => {
-      if (!socket.rooms.has(room.room_id)) {
-        return room
+    for (const el of socket.rooms) {
+      if (socket.rooms.has(el)) {
+        socket.leave(el)
       }
-      socket.leave(room.room_id)
-    })
+    }
 
     socket.join(payload)
 
