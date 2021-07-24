@@ -79,6 +79,8 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
+    users.filter(u => u.user_id !== socket.id)
+    console.log(users)
   })
 
 
