@@ -91,6 +91,8 @@ io.on('connection', socket => {
 
     console.log('SOCKET ROOMS', socket.rooms)
     console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
+
+    io.emit('room-data', rooms)
   });
 
 
@@ -110,11 +112,6 @@ io.on('connection', socket => {
     console.log(users)
     console.log(rooms)
 
-  })
-
-
-  io.on('disconnect', () => {
-    console.log('SOMEONE DISCONNECTED!')
   })
 
 })
