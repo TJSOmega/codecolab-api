@@ -79,11 +79,11 @@ io.on('connection', socket => {
       }
     })
 
-    rooms.forEach(room => { 
-      if (socket.rooms.has(room.room_id)) {
-        socket.leave(room.room_id)
-        rooms.filter(room)
+    rooms = rooms.filter(room => { 
+      if (!socket.rooms.has(room.room_id)) {
+        return room
       }
+      socket.leave(room.room_id)
     })
 
     socket.join(roomName)
