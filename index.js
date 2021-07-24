@@ -79,7 +79,7 @@ io.on('connection', socket => {
       }
     })
 
-    rooms = rooms.filter(room => { 
+    rooms = rooms.filter(room => {
       if (!socket.rooms.has(room.room_id)) {
         return room
       }
@@ -101,7 +101,14 @@ io.on('connection', socket => {
 
     users = users.filter(u => u.user_id !== socket.id)
 
+    rooms = rooms.filter(room => {
+      if (!socket.rooms.has(room.room_id)) {
+        return room
+      }
+      socket.leave(room.room_id)
+    })
 
+    
     console.log(users)
     console.log(rooms)
 
