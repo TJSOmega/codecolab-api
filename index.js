@@ -109,7 +109,7 @@ io.on('connection', socket => {
     socket.join(roomName)
 
     rooms.forEach(room => {
-      if (roomName === room.name) {
+      if (roomName === room.room_id) {
         room.activeUsers += 1
       }
     })
