@@ -69,7 +69,7 @@ io.on('connection', socket => {
 
     users.forEach(u => {
       if (u.user_id === socket.id) {
-        roomName = `${payload._id}${u.user_id}`
+        roomName = `${payload.question._id}${u.user_id}`
       }
     })
     console.log(socket.join('room-data',roomName))
