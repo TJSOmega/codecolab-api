@@ -47,7 +47,7 @@ io.on('connection', socket => {
   console.log(socket.id)
 
 
-  io.on('user-signup',payload =>{
+  socket.on('user-signup',payload =>{
     let user = {
       user_name: payload,
       user_id: socket.id
