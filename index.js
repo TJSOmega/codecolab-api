@@ -44,6 +44,9 @@ app.use(v1Routes);
 app.use(notFound);
 app.use(errorHandler);
 
+const getUser = (id) => users.find((user) => user.id === id);
+const getUsersInRoom = (room) => users.filter((user) => user.room === room);
+
 io.on('connection', socket => {
   let user = {}
   let roomObj = {}
@@ -150,8 +153,21 @@ io.on('connection', socket => {
     users.forEach(u => {
       if (u.user_id === socket.id) {
         u.room = payload
+
+        socket.emit('message', { user: 'admin', text: `${u.user_name}, welcome!` });
+        socket.broadcast.to(u.room).emit('message', { user: 'admin', text: `${u.user_name} has joined!` });
       }
     })
+
+    socket.on('sendMessage', (message, callback) => {
+
+      users.forEach(u => {
+        if (u.user_id === socket.id) {
+          io.to(u.room).emit('message', { user: u.user_name, text: message });
+        }
+      })
+      callback();
+    });
 
     socket.join(payload)
     rooms.forEach(room => {
@@ -173,10 +189,17 @@ io.on('connection', socket => {
     console.log(rooms)
   })
 
-  
+
 
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
+
+    
+    users.forEach(u => {
+      if (u.user_id === socket.id) {
+        io.to(user.room).emit('roomData', { room: user.room, users: u.user_name })
+      }
+    })
 
     console.log('SOCKET ROOMS IN DISCONNECT', socket.rooms)
 
@@ -195,23 +218,23 @@ io.on('connection', socket => {
       }
 
     }
-      rooms = rooms.filter(room => {
-        if (room.activeUsers > 0) {
-          return room
-        }
-      })
-      console.log(users)
-      console.log(rooms)
+    rooms = rooms.filter(room => {
+      if (room.activeUsers > 0) {
+        return room
+      }
     })
-
-
- 
-    // })
+    console.log(users)
+    console.log(rooms)
   })
 
 
 
-  mongoose.connect(MONGODB_URI, options)
-    .then(
-      server.listen(port, () => console.log(`Now listening on port ${port}.`))
-    )
+  // })
+})
+
+
+
+mongoose.connect(MONGODB_URI, options)
+  .then(
+    server.listen(port, () => console.log(`Now listening on port ${port}.`))
+  )
