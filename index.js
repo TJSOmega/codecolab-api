@@ -149,47 +149,47 @@ io.on('connection', socket => {
 
       }
     }
+  })
+  users.forEach(u => {
+    if (u.user_id === socket.id) {
+      u.room = payload
+
+      socket.emit('message', { user: 'admin', text: `${u.user_name}, welcome!` });
+      socket.broadcast.to(u.room).emit('message', { user: 'admin', text: `${u.user_name} has joined!` });
+    }
+  })
+
+  socket.on('sendMessage', (message, callback) => {
+    console.log('MESSAGE', message)
 
     users.forEach(u => {
       if (u.user_id === socket.id) {
-        u.room = payload
-
-        socket.emit('message', { user: 'admin', text: `${u.user_name}, welcome!` });
-        socket.broadcast.to(u.room).emit('message', { user: 'admin', text: `${u.user_name} has joined!` });
+        console.log("USER ROOM", u.room)
+        io.to(u.room).emit('message', { user: u.user_name, text: message });
       }
     })
+    callback();
+  });
 
-    socket.on('sendMessage', (message, callback) => {
-      console.log('MESSAGE', message)
-
-      users.forEach(u => {
-        if (u.user_id === socket.id) {
-          console.log("USER ROOM", u.room)
-          io.to(u.room).emit('message', { user: u.user_name, text: message });
-        }
-      })
-      callback();
-    });
-
-    socket.join(payload)
-    rooms.forEach(room => {
-      if (payload === room.room_id) {
-        room.activeUsers += 1
-      }
-    })
-
-    rooms = rooms.filter(room => {
-      if (room.activeUsers > 0) {
-        return room
-      }
-    })
-
-
-
-    console.log('SOCKET ROOMS', socket.rooms)
-    console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
-    console.log(rooms)
+  socket.join(payload)
+  rooms.forEach(room => {
+    if (payload === room.room_id) {
+      room.activeUsers += 1
+    }
   })
+
+  rooms = rooms.filter(room => {
+    if (room.activeUsers > 0) {
+      return room
+    }
+  })
+
+
+
+  console.log('SOCKET ROOMS', socket.rooms)
+  console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
+  console.log(rooms)
+
 
 
 
