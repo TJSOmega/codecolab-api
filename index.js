@@ -55,6 +55,7 @@ io.on('connection', socket => {
     user = {
       user_name: payload,
       user_id: socket.id,
+      room: ''
     }
 
     console.log('USERNAME SET')
@@ -77,6 +78,8 @@ io.on('connection', socket => {
     users.forEach(u => {
       if (u.user_id === socket.id) {
         roomName = `${payload.question._id}${u.user_id}`
+
+        u.room = roomName
 
         roomObj = {
           name: payload.question.name,
@@ -132,6 +135,12 @@ io.on('connection', socket => {
     for (const el of socket.rooms) {
       if (socket.rooms.has(el) && el !== socket.id) {
         socket.leave(el)
+
+        users.forEach(u => {
+          if (u.user_id === socket.id) {
+            u.room = payload
+          }
+        })
 
         rooms.forEach(room => {
           if (el === room.room_id) {
