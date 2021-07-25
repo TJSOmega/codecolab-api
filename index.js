@@ -227,15 +227,25 @@ io.on('connection', socket => {
     console.log(users)
     users = users.filter(u => u.user_id !== socket.id)
 
+
     users.forEach(user => {
-      if(user._id === socket.id) {
+      if(user.user_id === socket.id) {
         rooms.forEach(room => {
+          console.log(user)
+          console.log(room.room_id)
           if(user.room === room.room_id){
             room.activeUsers = room.activeUsers - 1
           }
         })
       }
     })
+
+    rooms = rooms.filter(room => {
+      if (room.activeUsers > 0) {
+        return room
+      }
+    })
+
     // for (const el of socket.rooms) {
     //   if (socket.rooms.has(el) && el !== socket.id) {
     //     socket.leave(el)
