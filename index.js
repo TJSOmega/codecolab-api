@@ -160,9 +160,11 @@ io.on('connection', socket => {
     })
 
     socket.on('sendMessage', (message, callback) => {
+      console.log('MESSAGE', message)
 
       users.forEach(u => {
         if (u.user_id === socket.id) {
+          console.log("USER ROOM", u.room)
           io.to(u.room).emit('message', { user: u.user_name, text: message });
         }
       })
@@ -194,7 +196,7 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
 
-    
+
     users.forEach(u => {
       if (u.user_id === socket.id) {
         io.to(user.room).emit('roomData', { room: user.room, users: u.user_name })
