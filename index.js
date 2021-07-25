@@ -218,7 +218,7 @@ io.on('connection', socket => {
 
     users.forEach(u => {
       if (u.user_id === socket.id) {
-        io.to(user.room).emit('roomData', { room: user.room, users: u.user_name })
+        io.to(user.room).emit('chat-data', { room: user.room, users: u.user_name })
       }
     })
 
@@ -243,7 +243,7 @@ io.on('connection', socket => {
 
     users = users.filter(u => u.user_id !== socket.id)
 
-
+    io.emit('room-data', rooms)
     console.log(users)
 
     // for (const el of socket.rooms) {
