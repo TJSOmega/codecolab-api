@@ -114,6 +114,7 @@ io.on('connection', socket => {
       console.log('MESSAGE', message)
 
       users.forEach(u => {
+        console.log('user message')
         if (u.user_id === socket.id) {
           console.log("USER ROOM", u.room)
           io.to(u.room).emit('message', { user: u.user_name, text: message });
