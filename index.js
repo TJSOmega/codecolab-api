@@ -55,10 +55,12 @@ io.on('connection', socket => {
   io.emit('room-data', rooms)
 
   socket.on('user-signup', payload => {
-    user = {
-      user_name: payload,
-      user_id: socket.id,
-      room: ''
+    if (socket.id !== user.user_id) {
+      user = {
+        user_name: payload,
+        user_id: socket.id,
+        room: ''
+      }
     }
 
     console.log('USERNAME SET')
