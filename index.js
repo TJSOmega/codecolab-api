@@ -55,20 +55,21 @@ let rooms = [];
 async function board() {
   const response = await axios.get('https://www.groupboard.com/mp/freegbbutton.cgi')
   const cookies = response.headers[ 'set-cookie'];
-  console.log('cookes:', cookies);
+  console.log('cookies:', cookies);
 
   let index = cookies[0]
-  console.log('atzero', index)
+  // console.log('atzero', index)
 
   let items = index.split(';');
-  console.log('split at ;', items);
+  // console.log('split at ;', items);
 
   let fullCookie = items[0];
-  console.log(fullCookie);
+  // console.log(fullCookie);
 
   let splitCookie = fullCookie.split('=')
-  console.log(splitCookie);
+  // console.log(splitCookie);
   let cookieKey = splitCookie[1];
+  console.log('api cookiekey', cookieKey);
   return cookieKey;
 }
 
@@ -105,12 +106,12 @@ io.on('connection', socket => {
 
 
 
-  socket.on('question', payload => {
+  socket.on('question', async payload => {
     let roomName
     console.log('----------------------------------------------')
     console.log('QUESTION ROOM from FE', payload)
-    let boardKey = board();
-    console.log(boardKey)
+    let boardKey = await board();
+    console.log('boardkey in questionsocket', boardKey)
 
 
     users.forEach(u => {
