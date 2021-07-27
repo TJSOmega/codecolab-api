@@ -5,8 +5,7 @@ const mongoose = require('mongoose');
 const http = require('http');
 const socketio = require('socket.io')
 
-let users = [];
-let rooms = [];
+
 
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/codecolab';
@@ -44,17 +43,29 @@ app.use(v1Routes);
 app.use(notFound);
 app.use(errorHandler);
 
-const getUser = (id) => users.find((user) => user.id === id);
-const getUsersInRoom = (room) => users.filter((user) => user.room === room);
+//From the chat application not currently in use
 
+// const getUser = (id) => users.find((user) => user.id === id);
+// const getUsersInRoom = (room) => users.filter((user) => user.room === room);
+
+let users = [];
+let rooms = [];
+
+// Connection to Socket.io
 io.on('connection', socket => {
+
   let user = {}
   let roomObj = {}
+
   console.log('CLIENT CONNECTED', socket.id)
 
-  io.emit('room-data', rooms)
+  if(rooms) {
+    io.emit('room-data', rooms)
+  }
+  
 
   socket.on('user-signup', payload => {
+    
     if (socket.id !== user.user_id) {
       user = {
         user_name: payload,
@@ -67,7 +78,6 @@ io.on('connection', socket => {
     console.log(user)
 
     users.push(user)
-    console.log(users)
 
     io.emit('user-return', user)
   })
@@ -75,19 +85,19 @@ io.on('connection', socket => {
 
 
   socket.on('question', payload => {
-    console.log(payload)
-    console.log('RECEIVED EMIT')
-    let roomName = ''
+    let roomName
+    console.log('----------------------------------------------')
+    console.log('QUESTION ROOM from FE', payload)
 
 
     users.forEach(u => {
       if (u.user_id === socket.id) {
-        roomName = `${payload.question._id}${u.user_id}`
+        roomName = payload.room
 
         u.room = roomName
 
         roomObj = {
-          name: payload.question.name,
+          question: payload.question,
           room_id: roomName,
           activeUsers: 0
         }
@@ -100,6 +110,8 @@ io.on('connection', socket => {
         socket.leave(el)
 
         rooms.forEach(room => {
+          console.log('ELEMENT', el)
+          console.log('ROOM', room.room_id)
           if (el === room.room_id) {
             room.activeUsers = room.activeUsers - 1
 
@@ -108,9 +120,12 @@ io.on('connection', socket => {
       }
 
     }
+    console.log('----------------------------------------------')
+    console.log('ROOM OBJECT', roomObj)
     rooms.push(roomObj)
+    console.log('----------------------------------------------')
     console.log(rooms)
-    socket.join(roomName)
+    // socket.join(roomObj.room)
 
     socket.on('sendMessage', (message, callback) => {
       console.log('MESSAGE', message)
@@ -125,7 +140,7 @@ io.on('connection', socket => {
       callback();
     });
 
-    socket.join(payload)
+    socket.join(payload.room)
     rooms.forEach(room => {
       if (payload === room.room_id) {
         room.activeUsers += 1
@@ -161,14 +176,14 @@ io.on('connection', socket => {
       if (socket.rooms.has(el) && el !== socket.id) {
         socket.leave(el)
 
-
-
         rooms.forEach(room => {
+          console.log('ELEMENT', el)
+          console.log('ROOM', room.room_id)
           if (el === room.room_id) {
             room.activeUsers = room.activeUsers - 1
+
           }
         })
-
       }
     }
 
@@ -229,7 +244,6 @@ io.on('connection', socket => {
     users.forEach(user => {
       if (user.user_id === socket.id) {
         rooms.forEach(room => {
-          console.log(user)
           console.log(room.room_id)
           if (user.room === room.room_id) {
             room.activeUsers = room.activeUsers - 1
@@ -247,28 +261,9 @@ io.on('connection', socket => {
     users = users.filter(u => u.user_id !== socket.id)
 
     io.emit('room-data', rooms)
-    console.log(users)
-
-    // for (const el of socket.rooms) {
-    //   if (socket.rooms.has(el) && el !== socket.id) {
-    //     socket.leave(el)
-
-    //     rooms.forEach(room => {
-    //       if (room.room_id.includes()) {
-    //         room.activeUsers = room.activeUsers - 1
-
-    //       }
-    //     })
-    //   }
-
-    // }
-    // rooms = rooms.filter(room => {
-    //   if (room.activeUsers > 0) {
-    //     return room
-    //   }
-    // })
-    console.log(users)
-    console.log(rooms)
+    
+    console.log('ACTIVE USERS', users)
+    console.log('ACTIVE ROOMS', rooms)
   })
 
 
