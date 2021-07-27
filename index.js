@@ -3,7 +3,8 @@ require('dotenv').config();
 const cors = require('cors')
 const mongoose = require('mongoose');
 const http = require('http');
-const socketio = require('socket.io')
+const socketio = require('socket.io');
+const axios = require('axios');
 
 
 
@@ -51,6 +52,26 @@ app.use(errorHandler);
 let users = [];
 let rooms = [];
 
+async function board() {
+  const response = await axios.get('https://www.groupboard.com/mp/freegbbutton.cgi')
+  const cookies = response.headers[ 'set-cookie'];
+  console.log('cookes:', cookies);
+
+  let index = cookies[0]
+  console.log('atzero', index)
+
+  let items = index.split(';');
+  console.log('split at ;', items);
+
+  let fullCookie = items[0];
+  console.log(fullCookie);
+
+  let splitCookie = fullCookie.split('=')
+  console.log(splitCookie);
+  let cookieKey = splitCookie[1];
+  return cookieKey;
+}
+
 // Connection to Socket.io
 io.on('connection', socket => {
 
@@ -88,9 +109,14 @@ io.on('connection', socket => {
     let roomName
     console.log('----------------------------------------------')
     console.log('QUESTION ROOM from FE', payload)
+    let boardKey = board();
+    console.log(boardKey)
 
 
     users.forEach(u => {
+
+
+
       if (u.user_id === socket.id) {
         roomName = payload.room
 
@@ -99,7 +125,8 @@ io.on('connection', socket => {
         roomObj = {
           question: payload.question,
           room_id: roomName,
-          activeUsers: 0
+          activeUsers: 0,
+          board: boardKey
         }
       }
     })
