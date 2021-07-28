@@ -55,21 +55,21 @@ let rooms = [];
 async function board() {
   const response = await axios.get('https://www.groupboard.com/mp/freegbbutton.cgi')
   const cookies = response.headers['set-cookie'];
-  console.log('cookies:', cookies);
+
 
   let index = cookies[0]
-  // console.log('atzero', index)
+
 
   let items = index.split(';');
-  // console.log('split at ;', items);
+
 
   let fullCookie = items[0];
-  // console.log(fullCookie);
+
 
   let splitCookie = fullCookie.split('=')
-  // console.log(splitCookie);
+
   let cookieKey = splitCookie[1];
-  console.log('api cookiekey', cookieKey);
+
   return cookieKey;
 }
 
@@ -108,10 +108,9 @@ io.on('connection', socket => {
 
   socket.on('question', async payload => {
     let roomName
-    console.log('----------------------------------------------')
-    console.log('QUESTION ROOM from FE', payload)
+
     let boardKey = await board();
-    console.log('boardkey in questionsocket', boardKey)
+
 
 
     users.forEach(u => {
@@ -138,8 +137,7 @@ io.on('connection', socket => {
         socket.leave(el)
 
         rooms.forEach(room => {
-          console.log('ELEMENT', el)
-          console.log('ROOM', room.room_id)
+
           if (el === room.room_id) {
             room.activeUsers = room.activeUsers - 1
 
@@ -148,33 +146,33 @@ io.on('connection', socket => {
       }
 
     }
-    console.log('----------------------------------------------')
-    console.log('ROOM OBJECT', roomObj)
+
     rooms.push(roomObj)
-    console.log('----------------------------------------------')
-    console.log(rooms)
+
     // socket.join(roomObj.room)
 
-    socket.on('sendMessage', (message, callback) => {
-      console.log('MESSAGE', message)
 
-      users.forEach(u => {
-        console.log('users', u)
-        if (u.user_id === socket.id) {
-          console.log("USER ROOM", u.room)
-          io.to(u.room).emit('message', { user: u.user_name, text: message });
-        }
-      })
-      callback();
-    });
+    // socket.on('sendMessage', (message, callback) => {
+    //   console.log('MESSAGE', message)
+
+    //   users.forEach(u => {
+    //     console.log('users', u)
+    //     if (u.user_id === socket.id) {
+    //       console.log("USER ROOM", u.room)
+    //       io.to(u.room).emit('message', { user: u.user_name, text: message });
+
+    //       callback();
+    //     }
+
+    //   })
+
+    // });
 
     socket.join(payload.room)
     rooms.forEach(room => {
-      if (user.room !== room.room_id && payload === room.room_id) {
-        
+      if (payload === room.room_id) {
         room.activeUsers += 1
       }
-
     })
 
 
@@ -207,8 +205,6 @@ io.on('connection', socket => {
         socket.leave(el)
 
         rooms.forEach(room => {
-          console.log('ELEMENT', el)
-          console.log('ROOM', room.room_id)
           if (el === room.room_id) {
             room.activeUsers = room.activeUsers - 1
 
@@ -217,27 +213,12 @@ io.on('connection', socket => {
       }
     }
 
-    users.forEach(u => {
-      if (u.user_id === socket.id) {
-        u.room = payload
 
-        socket.emit('message', { user: 'admin', text: `${u.user_name}, welcome!` });
-        socket.broadcast.to(u.room).emit('message', { user: 'admin', text: `${u.user_name} has joined!` });
+    users.forEach(user => {
+      if(socket.id === user.user_id){
+        user.room = payload
       }
     })
-
-    socket.on('sendMessage', (message, callback) => {
-      console.log('MESSAGE', message)
-
-      users.forEach(u => {
-        if (u.user_id === socket.id) {
-          console.log("USER ROOM", u.room)
-          io.to(u.room).emit('message', { user: u.user_name, text: message });
-        }
-      })
-      callback();
-    });
-
     socket.join(payload)
     rooms.forEach(room => {
       if (payload === room.room_id) {
@@ -252,13 +233,60 @@ io.on('connection', socket => {
     })
 
 
+    io.emit('room-data', rooms)
 
     console.log('SOCKET ROOMS', socket.rooms)
     console.log('IO MANAGER ROOMS', io.sockets.adapter.rooms)
-    console.log(rooms)
+  })
+
+  socket.on('leave-room', payload => {
+
+    users.forEach(user => {
+      if (user.user_id === socket.id) {
+        rooms.forEach(room => {
+
+          if (user.room === room.room_id) {
+            socket.leave(user.room)
+            room.activeUsers = room.activeUsers - 1
+          }
+        })
+      }
+    })
+
+    rooms = rooms.filter(room => {
+      if (room.activeUsers > 0) {
+        return room
+      }
+    })
+
+
+    io.emit('room-data', rooms)
   })
 
 
+  users.forEach(u => {
+    console.log('USERS', u)
+    if (u.user_id === socket.id) {
+
+      socket.emit('message', { user: 'admin', text: `${u.user_name}, welcome!` });
+      socket.broadcast.to(u.room).emit('message', { user: 'admin', text: `${u.user_name} has joined!` });
+    }
+  })
+
+  'SOCKET RECEIVE', socket.on('sendMessage', (message, callback) => {
+    console.log('MESSAGE', message)
+
+    users.forEach(u => {
+      if (u.user_id === socket.id) {
+        console.log('MESSAGE USER', u)
+        io.to(u.room).emit('message', { user: u.user_name, text: message })
+
+        callback();
+      }
+
+    })
+
+  });
 
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED')
