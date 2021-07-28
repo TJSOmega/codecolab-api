@@ -54,7 +54,7 @@ let rooms = [];
 
 async function board() {
   const response = await axios.get('https://www.groupboard.com/mp/freegbbutton.cgi')
-  const cookies = response.headers[ 'set-cookie'];
+  const cookies = response.headers['set-cookie'];
   console.log('cookies:', cookies);
 
   let index = cookies[0]
@@ -81,13 +81,13 @@ io.on('connection', socket => {
 
   console.log('CLIENT CONNECTED', socket.id)
 
-  if(rooms) {
+  if (rooms) {
     io.emit('room-data', rooms)
   }
-  
+
 
   socket.on('user-signup', payload => {
-    
+
     if (socket.id !== user.user_id) {
       user = {
         user_name: payload,
@@ -170,9 +170,11 @@ io.on('connection', socket => {
 
     socket.join(payload.room)
     rooms.forEach(room => {
-      if (payload === room.room_id) {
+      if (user.room !== room.room_id && payload === room.room_id) {
+        
         room.activeUsers += 1
       }
+
     })
 
 
@@ -289,7 +291,7 @@ io.on('connection', socket => {
     users = users.filter(u => u.user_id !== socket.id)
 
     io.emit('room-data', rooms)
-    
+
     console.log('ACTIVE USERS', users)
     console.log('ACTIVE ROOMS', rooms)
   })
